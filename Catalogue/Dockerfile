@@ -1,22 +1,34 @@
+# ---------- Stage 1 : Build ----------
 FROM node:20.19.5-alpine3.21 AS build
+
 WORKDIR /opt/server
-COPY  package.json .
+
+COPY package.json .
 COPY *.js .
 
-RUN npm install 
+RUN npm install
 
 
-
-# multistage buld this is
+# ---------- Stage 2 : Runtime ----------
 FROM node:20.19.5-alpine3.21
-WORKDIR /opt/server
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
+WORKDIR /opt/server
+
+# Create non-root user and group
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
+
+# Copy application from build stage
 COPY --from=build /opt/server /opt/server
 
+# Change ownership to non-root user
+RUN chown -R roboshop:roboshop /opt/server
+
+# Switch to non-root user
+USER roboshop
+
+# Environment variables
 ENV MONGO=true \
-     MONGO_URL="mongodb://mongodb:27017/catalogue"
+    MONGO_URL="mongodb://mongodb:27017/catalogue"
 
-CMD [ "node","server.js" ]
-
-
+# Start application
+CMD ["node", "server.js"]
