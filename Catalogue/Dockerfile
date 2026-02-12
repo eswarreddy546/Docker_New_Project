@@ -26,6 +26,9 @@ RUN chown -R roboshop:roboshop /opt/server
 # Switch to non-root user
 USER roboshop
 
+LABEL created="Eswar Reddy"\
+      maintainer="eswar"
+
 # Environment variables
 ENV MONGO=true \
     MONGO_URL="mongodb://mongodb:27017/catalogue"
