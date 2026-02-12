@@ -10,6 +10,7 @@ RUN npm install
 # multistage buld this is
 FROM node:20.19.5-alpine3.21
 WORKDIR /opt/server
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=build /opt/server /opt/server
 
